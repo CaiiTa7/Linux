@@ -1,5 +1,5 @@
 #!/bin/bash
-pacman -Syu --noconfirm make gcc wget curl git base-devel net-tools neofetch zsh unzip dhclient fontconfig networkmanager
+pacman -Syu --noconfirm make gcc wget curl git base-devel net-tools neofetch zsh unzip dhclient fontconfig networkmanager openssh
 
 url="https://www.softether-download.com/files/softether/"
 get_last_version() {
@@ -116,3 +116,4 @@ wget -O ~/.neofetch/OP.jpeg "https://w.forfun.com/fetch/d7/d7a12cf1106ee202c717b
 
 # Configurer Neofetch pour utiliser l'image
 source $config_file
+systemctl enable openssh && systemctl start openssh > /dev/null 2>&1
