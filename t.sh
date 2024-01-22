@@ -1,5 +1,5 @@
 #!/bin/bash
-pacman -Syu --noconfirm make gcc wget curl git base-devel net-tools neofetch zsh unzip
+pacman -Syu --noconfirm make gcc wget curl git base-devel net-tools neofetch zsh unzip dhclient fontconfig networkmanager
 
 url="https://www.softether-download.com/files/softether/"
 get_last_version() {
@@ -57,32 +57,28 @@ $VPNCMD_BIN localhost /CLIENT /CMD AccountConnect MyConnection
 # Vé$rifier l'état de la connexion
 $VPNCMD_BIN localhost /CLIENT /CMD AccountStatusGet MyConnection
 sleep 3
-config_file="~/.zshrc"
+config_file=~/.zshrc
 echo '
-eval "$(oh-my-posh --init --shell zsh --config ~/.poshthemes/dracula.omp.json)" 
+# Verification VPN
+
+eval "$(oh-my-posh --init --shell zsh --config ~/.poshthemes/dracula.omp.json)"
 neofetch --w3m ~/.neofetch/OP.jpeg --source "ascii" --ascii_distro arch
 
 start_vpn() {
     dev="vpn_vpn"
-    sudo /opt/softether/vpnclient/vpnclient start
-    sudo /opt/softether/vpnclient/vpncmd localhost /CLIENT /CMD AccountConnect MyConnection
-    sudo dhclient $dev
-    route=$(ip addr | grep $dev | awk '{print $2}' | sed 's/.$//')
-    if [ -z "$route" ]; then
-        sudo ip route add 10.101.150.0/24 via 192.168.33.1
-        sudo ip route del default via 192.168.33.1
-    else
-        for route in $(ip addr | grep $dev | awk '{print $2}'); do
-            sudo ip route add 10.101.150.0/24 via 192.168.33.1
-            sudo ip route del default via 192.168.33.1
-        done
-    fi
+    /opt/softether/vpnclient/vpnclient start > /dev/null 2>&1
+    /opt/softether/vpnclient/vpncmd localhost /CLIENT /CMD AccountConnect MyConnection > /dev/null 2>&1
+    nmcli device connect ens33 > /dev/null 2>&1
+    dhclient $dev
+    ip route add 10.101.150.0/24 via 192.168.33.1
+    ip route del default via 192.168.33.1
+    echo -e "\nVPN Masi opérationnel !"
 }
 
 alias vpn_start=start_vpn
 alias vpn_stop="sudo /opt/softether/vpnclient/vpnclient stop"
-alias vpn_restart="sudo /opt/softether/vpnclient/vpnclient stop && sudo /opt/softether/vpnclient/vpnclient start"
-alias vpn_status="sudo /opt/softether/vpnclient/vpnclient status"
+alias vpn_restart=start_vpn
+alias vpn_status="sudo /opt/softether/vpnclient/vpncmd localhost /CLIENT /CMD AccountList"
 ' >> $config_file
 
 echo "Fini"
@@ -114,7 +110,7 @@ wget https://github.com/ryanoasis/nerd-fonts/releases/download/v3.1.1/Meslo.zip 
 
 unzip ~/.fonts/Meslo.zip -d ~/.fonts/Meslo
 fc-cache -fv
-rm ~/Downloads/Meslo.zip
+rm ~/.fonts/Meslo.zip
 # Télécharger l'image et la placer dans un répertoire
 wget -O ~/.neofetch/OP.jpeg "https://w.forfun.com/fetch/d7/d7a12cf1106ee202c717b2617d457b95.jpeg"
 
