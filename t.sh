@@ -60,6 +60,7 @@ sleep 3
 config_file="~/.zshrc"
 echo '
 eval "$(oh-my-posh --init --shell zsh --config ~/.poshthemes/dracula.omp.json)" 
+neofetch --w3m ~/.neofetch/OP.jpeg --source "ascii" --ascii_distro arch
 
 start_vpn() {
     dev="vpn_vpn"
@@ -100,25 +101,22 @@ sudo chmod +x /usr/local/bin/oh-my-posh
 
 ## Download the themes
 mkdir ~/.poshthemes
+mkdir ~/.fonts
+mkdir ~/.neofetch
+
 wget https://github.com/JanDeDobbeleer/oh-my-posh/releases/latest/download/themes.zip -O ~/.poshthemes/themes.zip
 unzip ~/.poshthemes/themes.zip -d ~/.poshthemes
 chmod u+rw ~/.poshthemes/*.json
 rm ~/.poshthemes/themes.zip
 
 # Configurer Oh My Posh avec le thème Dracula
-wget https://github.com/ryanoasis/nerd-fonts/releases/download/v3.1.1/Meslo.zip -O ~/Downloads/Meslo.zip
-cd ~
-mkdir .fonts
-mkdir .neofetch
-unzip ~/Downloads/Meslo.zip -d ~/.fonts/Meslo
+wget https://github.com/ryanoasis/nerd-fonts/releases/download/v3.1.1/Meslo.zip -O ~/.fonts/Meslo.zip
+
+unzip ~/.fonts/Meslo.zip -d ~/.fonts/Meslo
 fc-cache -fv
 rm ~/Downloads/Meslo.zip
 # Télécharger l'image et la placer dans un répertoire
 wget -O ~/.neofetch/OP.jpeg "https://w.forfun.com/fetch/d7/d7a12cf1106ee202c717b2617d457b95.jpeg"
 
 # Configurer Neofetch pour utiliser l'image
-echo 'neofetch --w3m ~/.neofetch/OP.jpeg --source "ascii" --ascii_distro arch' >> ~/.zshrc
-
-echo 'neofetch' >> ~/.zshrc
-
 source $config_file
