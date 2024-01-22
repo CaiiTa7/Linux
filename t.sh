@@ -39,7 +39,7 @@ sudo chmod +x /usr/local/bin/oh-my-posh
 ## Download the themes
 mkdir ~/.poshthemes
 wget https://github.com/JanDeDobbeleer/oh-my-posh/releases/latest/download/themes.zip -O ~/.poshthemes/themes.zip
-tar -xzvf ~/.poshthemes/themes.zip -d ~/.poshthemes
+unzip ~/.poshthemes/themes.zip -d ~/.poshthemes
 chmod u+rw ~/.poshthemes/*.json
 rm ~/.poshthemes/themes.zip
 
@@ -50,7 +50,7 @@ wget https://github.com/ryanoasis/nerd-fonts/releases/download/v3.1.1/Meslo.zip 
 cd ~
 mkdir .fonts
 mkdir .neofetch
-tar -xzvf ~/Downloads/Meslo.zip -d ~/.fonts/Meslo
+unzip ~/Downloads/Meslo.zip -d ~/.fonts/Meslo
 fc-cache -fv
 rm ~/Downloads/Meslo.zip
 # Télécharger l'image et la placer dans un répertoire
