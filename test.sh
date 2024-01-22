@@ -64,21 +64,55 @@ if [ "$last_version" != "Nope" ]; then
 
     sleep 3
     start_vpn() {
-    dev="vpn_vpn"
-    sudo /opt/softether/vpnclient/vpnclient start
-    sudo /opt/softether/vpnclient/vpncmd localhost /CLIENT /CMD AccountConnect MyConnection
-    sudo dhclient $dev
-    route=$(ip addr | grep $dev | awk '{print $2}' | sed 's/.$//')
-    if [ -z "$route" ]; then
-        sudo ip route add 10.101.150.0/24 via 192.168.33.1
-        sudo ip route del default via 192.168.33.1
-    else
-        for route in $(ip addr | grep $dev | awk '{print $2}'); do
+        dev="vpn_vpn"
+        sudo /opt/softether/vpnclient/vpnclient start
+        sudo /opt/softether/vpnclient/vpncmd localhost /CLIENT /CMD AccountConnect MyConnection
+        sudo dhclient $dev
+        route=$(ip addr | grep $dev | awk '{print $2}' | sed 's/.$//')
+        if [ -z "$route" ]; then
             sudo ip route add 10.101.150.0/24 via 192.168.33.1
             sudo ip route del default via 192.168.33.1
-        done
+        else
+            for route in $(ip addr | grep $dev | awk '{print $2}'); do
+                sudo ip route add 10.101.150.0/24 via 192.168.33.1
+                sudo ip route del default via 192.168.33.1
+            done
+        fi
+    }
+    if [[ $SHELL == *'bash'* ]]; then
+        cp ~/.bashrc ~/.bashrc.bak
+        config_file="$HOME/.bashrc"
+    elif [[ $SHELL == *'zsh'* ]]; then
+        cp ~/.zshrc ~/.zshrc.bak
+        config_file="$HOME/.zshrc"
+    else
+        echo "Shell non pris en charge"
+        exit 1
     fi
-}
+    if test -f "$config_file"; then
+        cat <<EOF >> "$config_file"
+alias vpn_start=start_vpn
+alias vpn_stop="sudo /opt/softether/vpnclient/vpnclient stop"
+alias vpn_restart="sudo /opt/softether/vpnclient/vpnclient stop && sudo /opt/softether/vpnclient/vpnclient start"
+alias vpn_status="sudo /opt/softether/vpnclient/vpnclient status"
+EOF
+        if [[ $SHELL == *'bash'* ]]; then
+            source ~/.bashrc
+        elif [[ $SHELL == *'zsh'* ]]; then
+            source ~/.zshrc
+        fi
+        echo "Fini"
+        echo "Les alias VPN ont été ajoutés à $config_file"
+        echo "Vous pouvez utiliser les commmandes suivants :"
+        echo "  - vpn_start : pour démarrer le client VPN"
+        echo "  - vpn_stop : pour arrêter le client VPN"
+        echo "  - vpn_restart : pour redémarrer le client VPN"
+        echo "  - vpn_status : pour afficher l'état du client VPN"
+    else
+        echo "Impossible d'ajouter les alias VPN"
+    fi
+fi
+
 chsh -s $(which zsh)
 git clone https://aur.archlinux.org/oh-my-posh.git
 cd oh-my-posh
@@ -98,40 +132,3 @@ neofetch --w3m ~/Pictures/neofetch_image.jpeg --source "ascii" --ascii_distro ar
 ' >> ~/.zshrc
 
 echo 'neofetch' >> ~/.zshrc
-
-# Alias pour se connecter au VPN
-
-if [[ $SHELL == *'bash'* ]]; then
-    cp ~/.bashrc ~/.bashrc.bak
-    config_file="$HOME/.bashrc"
-elif [[ $SHELL == *'zsh'* ]]; then
-    cp ~/.zshrc ~/.zshrc.bak
-    config_file="$HOME/.zshrc"
-else
-    echo "Shell non pris en charge"
-    exit 1
-fi
-
-if test -f "$config_file"; then
-    cat <<EOF >> "$config_file"
-alias vpn_start=start_vpn
-alias vpn_stop="sudo /opt/softether/vpnclient/vpnclient stop"
-alias vpn_restart="sudo /opt/softether/vpnclient/vpnclient stop && sudo /opt/softether/vpnclient/vpnclient start"
-alias vpn_status="sudo /opt/softether/vpnclient/vpnclient status"
-EOF
-    if [[ $SHELL == *'bash'* ]]; then
-        source ~/.bashrc
-    elif [[ $SHELL == *'zsh'* ]]; then
-        source ~/.zshrc
-    fi
-
-    echo "Fini"
-    echo "Les alias VPN ont été ajoutés à $config_file"
-    echo "Vous pouvez utiliser les commmandes suivants :"
-    echo "  - vpn_start : pour démarrer le client VPN"
-    echo "  - vpn_stop : pour arrêter le client VPN"
-    echo "  - vpn_restart : pour redémarrer le client VPN"
-    echo "  - vpn_status : pour afficher l'état du client VPN"
-else
-    echo "Impossible d'ajouter les alias VPN"
-fi
