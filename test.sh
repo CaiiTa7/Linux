@@ -51,7 +51,7 @@ if [ "$last_version" != "Nope" ]; then
     $VPNCMD_BIN localhost /CLIENT /CMD NicCreate "VPN"
 
     # Créer une nouvelle connexion nommée "MyConnection"
-    $VPNCMD_BIN localhost /CLIENT /CMD AccountCreate MyConnection /SERVER:$HOSTNAME:$PORT /HUB:$HUB_NAME /USERNAME:$USER_NAME
+    $VPNCMD_BIN localhost /CLIENT /CMD AccountCreate MyConnection /SERVER:$HOSTNAME:$PORT /HUB:$HUB_NAME /USERNAME:$USER_NAME /NICNAME:VPN
 
     # Co$nfigurer la connexion pour l'authentification par mot de passe
     $VPNCMD_BIN localhost /CLIENT /CMD AccountPasswordSet MyConnection /PASSWORD:$PASSWORD /TYPE:standard
@@ -116,7 +116,7 @@ fi
 chsh -s $(which zsh)
 git clone https://aur.archlinux.org/oh-my-posh.git
 cd oh-my-posh
-makepkg -si
+sudo makepkg -si
 cd ..
 rm -rf oh-my-posh
 
