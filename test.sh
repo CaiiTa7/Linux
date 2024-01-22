@@ -77,7 +77,7 @@ if [ "$last_version" != "Nope" ]; then
             sudo ip route add 10.101.150.0/24 via 192.168.33.1
             sudo ip route del default via 192.168.33.1
         done
-fi
+    fi
 }
 chsh -s $(which zsh)
 git clone https://aur.archlinux.org/oh-my-posh.git
