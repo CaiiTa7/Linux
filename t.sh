@@ -1,5 +1,12 @@
 #!/bin/bash
-pacman -Syu --noconfirm make gcc wget curl git base-devel net-tools neofetch zsh unzip dhclient fontconfig networkmanager openssh
+
+# Mise à jour des dépôts
+line_number=$(grep -n "archmirror.it" /etc/pacman.d/mirrorlist | cut -f1 -d:)
+sed -i "${line_number}s/^/#/" /etc/pacman.d/mirrorlist
+pacman -Syy
+
+# Installation des paquets nécessaires
+pacman -Syu --noconfirm make gcc wget curl git base-devel net-tools neofetch zsh unzip dhclient fontconfig networkmanager
 
 url="https://www.softether-download.com/files/softether/"
 get_last_version() {
@@ -116,4 +123,3 @@ wget -O ~/.neofetch/OP.jpeg "https://w.forfun.com/fetch/d7/d7a12cf1106ee202c717b
 
 # Configurer Neofetch pour utiliser l'image
 source $config_file
-systemctl enable openssh && systemctl start openssh > /dev/null 2>&1
