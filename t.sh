@@ -63,9 +63,13 @@ $VPNCMD_BIN localhost /CLIENT /CMD AccountPasswordSet MyConnection /PASSWORD:$PA
 $VPNCMD_BIN localhost /CLIENT /CMD AccountConnect MyConnection
 # Vé$rifier l'état de la connexion
 $VPNCMD_BIN localhost /CLIENT /CMD AccountStatusGet MyConnection
+$VPNCLIENT_BIN stop
+
 sleep 3
+# Configuration de ZSH
 config_file=~/.zshrc
-echo '
+
+cat << 'EOF' >> $config_file
 # Verification VPN
 
 eval "$(oh-my-posh --init --shell zsh --config ~/.poshthemes/dracula.omp.json)"
@@ -84,9 +88,9 @@ start_vpn() {
 
 alias vpn_start=start_vpn
 alias vpn_stop="sudo /opt/softether/vpnclient/vpnclient stop"
-alias vpn_restart=start_vpn
+alias vpn_restart="sudo /opt/softether/vpnclient/vpnclient stop && start_vpn"
 alias vpn_status="sudo /opt/softether/vpnclient/vpncmd localhost /CLIENT /CMD AccountList"
-' >> $config_file
+EOF
 
 echo "Fini"
 echo "Les alias VPN ont été ajoutés à $config_file"
