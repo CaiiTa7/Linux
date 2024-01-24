@@ -1,5 +1,6 @@
 #!/bin/bash
 
+timedatectl set-ntp true
 # Mise à jour des dépôts
 line_number=$(grep -n "archmirror.it" /etc/pacman.d/mirrorlist | cut -f1 -d:)
 sed -i "${line_number}s/^/#/" /etc/pacman.d/mirrorlist
