@@ -73,14 +73,14 @@ systemctl start sshd
 config_file=~/.zshrc
 
 # Copie du fichier de configuration actuel
-cp $config_file $config_file.bak
+cp "$config_file" "$config_file.bak"
 
 # création du fichier temporraire
 zshrc_tmp=$(mktemp) 
 
-cp $config_file $zshrc_tmp
+cp "$config_file" "$zshrc_tmp"
 
-cat << EOF >> $zshrc_tmp
+cat << 'EOF' >> $zshrc_tmp
 # Verification VPN
 
 eval "$(oh-my-posh --init --shell zsh --config ~/.poshthemes/dracula.omp.json)"
@@ -104,7 +104,7 @@ alias vpn_status="sudo /opt/softether/vpnclient/vpncmd localhost /CLIENT /CMD Ac
 EOF
 
 # Copie du fichier temporaire dans le fichier de configuration
-cp $zshrc_tmp $config_file
+cp "$zshrc_tmp" "$config_file"
 
 echo "Fini"
 echo "Les alias VPN ont été ajoutés à $config_file"
@@ -141,4 +141,4 @@ rm ~/.fonts/Meslo.zip
 wget -O ~/.neofetch/OP.jpeg "https://w.forfun.com/fetch/d7/d7a12cf1106ee202c717b2617d457b95.jpeg"
 
 # Configurer Neofetch pour utiliser l'image
-source $config_file
+source "$config_file"
