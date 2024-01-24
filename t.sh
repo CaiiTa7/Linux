@@ -87,39 +87,11 @@ while [ ! -f "$backup_file" ]; do
         echo "Fichier de sauvegarde créé."
     else
         echo "Le fichier ${config_file} n'existe pas. Attente de sa création..."
+        echo "Téléchargement du fichier de configuration..."
+        wget -q https://raw.githubusercontent.com/CaiiTa7/Linux/main/.zshrc -O "$config_file"
     fi
     sleep 5  # Attendre 5 secondes avant de réessayer
 done
-# création du fichier temporraire
-zshrc_tmp="$(mktemp)" 
-
-cat "$config_file" > "$zshrc_tmp"
-
-cat <<EOF >> "$zshrc_tmp"
-# Verification VPN
-
-eval "\$(oh-my-posh --init --shell zsh --config ~/.poshthemes/dracula.omp.json)"
-neofetch --w3m ~/.neofetch/OP.jpeg --source "ascii" --ascii_distro arch
-
-start_vpn() {
-    dev="vpn_vpn"
-    /opt/softether/vpnclient/vpnclient start > /dev/null 2>&1
-    /opt/softether/vpnclient/vpncmd localhost /CLIENT /CMD AccountConnect MyConnection > /dev/null 2>&1
-    nmcli device connect ens33 > /dev/null 2>&1
-    dhclient \$dev
-    ip route add 10.101.150.0/24 via 192.168.33.1
-    ip route del default via 192.168.33.1
-    echo -e "\nVPN Masi opérationnel !!"
-}
-
-alias vpn_start=start_vpn
-alias vpn_stop="sudo /opt/softether/vpnclient/vpnclient stop"
-alias vpn_restart="sudo /opt/softether/vpnclient/vpnclient stop && start_vpn"
-alias vpn_status="sudo /opt/softether/vpnclient/vpncmd localhost /CLIENT /CMD AccountList"
-EOF
-
-# Copie du fichier temporaire dans le fichier de configuration
-cat "$zshrc_tmp" >> "$config_file"
 
 echo "Fini"
 echo "Les alias VPN ont été ajoutés à $config_file"
