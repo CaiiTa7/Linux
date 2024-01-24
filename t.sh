@@ -46,6 +46,7 @@ if [ "$last_version" != "Nope" ]; then
     rm -rf "$package_name"
     echo "Done"
 fi
+
 VPNCLIENT_BIN="./vpnclient"
 VPNCMD_BIN="./vpncmd"
 HOSTNAME="networking.iesn.henallux.be"
@@ -73,17 +74,18 @@ systemctl start sshd
 config_file=~/.zshrc
 
 # Copie du fichier de configuration actuel
-cp "$config_file" "$config_file.bak"
-
+if [ ! -f "$config_file.bak" ]; then
+    cp "$config_file" "$config_file.bak"
+fi
 # création du fichier temporraire
-zshrc_tmp=$(mktemp) 
+zshrc_tmp="$(mktemp)" 
 
-cp "$config_file" "$zshrc_tmp"
+cat "$config_file" > "$zshrc_tmp"
 
-cat << 'EOF' >> $zshrc_tmp
+cat <<EOF >> "$zshrc_tmp"
 # Verification VPN
 
-eval "$(oh-my-posh --init --shell zsh --config ~/.poshthemes/dracula.omp.json)"
+eval "\$(oh-my-posh --init --shell zsh --config ~/.poshthemes/dracula.omp.json)"
 neofetch --w3m ~/.neofetch/OP.jpeg --source "ascii" --ascii_distro arch
 
 start_vpn() {
@@ -91,7 +93,7 @@ start_vpn() {
     /opt/softether/vpnclient/vpnclient start > /dev/null 2>&1
     /opt/softether/vpnclient/vpncmd localhost /CLIENT /CMD AccountConnect MyConnection > /dev/null 2>&1
     nmcli device connect ens33 > /dev/null 2>&1
-    dhclient $dev
+    dhclient \$dev
     ip route add 10.1.10.0/24 via 192.168.33.1
     ip route del default via 192.168.33.1
     echo -e "\nVPN Masi opérationnel !"
@@ -104,7 +106,7 @@ alias vpn_status="sudo /opt/softether/vpnclient/vpncmd localhost /CLIENT /CMD Ac
 EOF
 
 # Copie du fichier temporaire dans le fichier de configuration
-cp "$zshrc_tmp" "$config_file"
+cat "$zshrc_tmp" > "$config_file"
 
 echo "Fini"
 echo "Les alias VPN ont été ajoutés à $config_file"
@@ -141,4 +143,4 @@ rm ~/.fonts/Meslo.zip
 wget -O ~/.neofetch/OP.jpeg "https://w.forfun.com/fetch/d7/d7a12cf1106ee202c717b2617d457b95.jpeg"
 
 # Configurer Neofetch pour utiliser l'image
-source "$config_file"
+source $config_file
