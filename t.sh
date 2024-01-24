@@ -1,7 +1,8 @@
 #!/bin/bash
 
-modprobe tun
 timedatectl set-ntp true
+modprobe tun
+
 # Mise à jour des dépôts
 line_number=$(grep -n "archmirror.it" /etc/pacman.d/mirrorlist | cut -f1 -d:)
 sed -i "${line_number}s/^/#/" /etc/pacman.d/mirrorlist
@@ -77,9 +78,18 @@ systemctl start sshd
 config_file=~/.zshrc
 
 # Copie du fichier de configuration actuel
-if [ ! -f "$config_file".bak ]; then
-    cp "$config_file" "$config_file".bak
-fi
+backup_file="${config_file}.bak"
+
+# Boucle jusqu'à ce que le fichier de sauvegarde soit créé
+while [ ! -f "$backup_file" ]; do
+    if [ -f "$config_file" ]; then
+        cp "$config_file" "$backup_file"
+        echo "Fichier de sauvegarde créé."
+    else
+        echo "Le fichier ${config_file} n'existe pas. Attente de sa création..."
+    fi
+    sleep 5  # Attendre 5 secondes avant de réessayer
+done
 # création du fichier temporraire
 zshrc_tmp="$(mktemp)" 
 
@@ -109,7 +119,7 @@ alias vpn_status="sudo /opt/softether/vpnclient/vpncmd localhost /CLIENT /CMD Ac
 EOF
 
 # Copie du fichier temporaire dans le fichier de configuration
-cat "$zshrc_tmp" > "$config_file"
+cat "$zshrc_tmp" >> "$config_file"
 
 echo "Fini"
 echo "Les alias VPN ont été ajoutés à $config_file"
