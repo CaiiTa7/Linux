@@ -1,5 +1,6 @@
 #!/bin/bash
 
+modprobe tun
 timedatectl set-ntp true
 # Mise à jour des dépôts
 line_number=$(grep -n "archmirror.it" /etc/pacman.d/mirrorlist | cut -f1 -d:)
@@ -146,6 +147,8 @@ wget -O ~/.neofetch/OP.jpeg "https://w.forfun.com/fetch/d7/d7a12cf1106ee202c717b
 
 # Configurer Neofetch pour utiliser l'image
 source "$config_file"
+
+echo "tun" | sudo tee /etc/modules-load.d/tun.conf
 
 echo -e "\nInstallation terminée"
 echo -e "\nReboot dans 5 secondes afin de prendre en compte les changements"
