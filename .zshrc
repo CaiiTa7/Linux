@@ -279,6 +279,7 @@ alias vpn_status="sudo /opt/softether/vpnclient/vpncmd localhost /CLIENT /CMD Ac
 alias keyring_fix="sudo rm -r /etc/pacman.d/gnupg/ && sudo pacman-key --init && sudo pacman-key --populate archlinux && sudo pacman-key --refresh-keys && sudo pacman -Syyu"
 alias keyring_fix2="sudo pacman-key --init && sudo pacman-key --populate archlinux && sudo pacman-key --refresh-keys && sudo pacman -Syyu"
 
+alias connect="sudo nmcli connect"
 alias update="sudo pacman -Syyu"
 alias install="sudo pacman -S --noconfirm"
 alias remove="sudo pacman -R"
