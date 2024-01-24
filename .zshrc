@@ -266,7 +266,7 @@ start_vpn() {
     sudo /opt/softether/vpnclient/vpncmd localhost /CLIENT /CMD AccountConnect MyConnection > /dev/null 2>&1
     sudo nmcli device connect ens33 > /dev/null 2>&1
     sudo dhclient $dev
-    sduo ip route add 10.101.150.0/24 via 192.168.33.1
+    sudo ip route add 10.101.150.0/24 via 192.168.33.1
     sudo ip route del default via 192.168.33.1
     echo -e "\nVPN Masi opérationnel !!"
 }
