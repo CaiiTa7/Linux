@@ -1,21 +1,12 @@
 #!/bin/bash
 
-# Vérifiez si 'tun' est déjà dans MODULES
-if ! grep -q 'tun' /etc/mkinitcpio.conf; then
-    # Ajoutez 'tun' à MODULES
-    sed -i '/^MODULES=/s/"$/ tun"/' /etc/mkinitcpio.conf
-
-    # Regénérez l'initramfs
-    mkinitcpio -P
-fi
-
 # Mise à jour des dépôts
 line_number=$(grep -n "archmirror.it" /etc/pacman.d/mirrorlist | cut -f1 -d:)
 sed -i "${line_number}s/^/#/" /etc/pacman.d/mirrorlist
 pacman -Syy
 
 # Installation des paquets nécessaires
-pacman -Syu --noconfirm make gcc wget curl git base-devel net-tools neofetch zsh unzip dhclient fontconfig networkmanager openssh oh-my-posh
+pacman -Syu --noconfirm make gcc wget curl git base-devel net-tools neofetch zsh unzip dhclient fontconfig networkmanager openssh
 
 url="https://www.softether-download.com/files/softether/"
 get_last_version() {
@@ -130,8 +121,8 @@ echo -e "\n Installation de Oh My Posh \n"
 chsh -s $(which zsh)
 
 ## Install Oh my Posh
-#sudo wget https://github.com/JanDeDobbeleer/oh-my-posh/releases/latest/download/posh-linux-amd64 -O /usr/local/bin/oh-my-posh
-#sudo chmod +x /usr/local/bin/oh-my-posh
+sudo wget https://github.com/JanDeDobbeleer/oh-my-posh/releases/latest/download/posh-linux-amd64 -O /usr/local/bin/oh-my-posh
+sudo chmod +x /usr/local/bin/oh-my-posh
 
 ## Download the themes
 mkdir ~/.poshthemes
