@@ -1,12 +1,21 @@
 #!/bin/bash
 
+# Vérifiez si 'tun' est déjà dans MODULES
+if ! grep -q 'tun' /etc/mkinitcpio.conf; then
+    # Ajoutez 'tun' à MODULES
+    sed -i '/^MODULES=/s/"$/ tun"/' /etc/mkinitcpio.conf
+
+    # Regénérez l'initramfs
+    mkinitcpio -P
+fi
+
 # Mise à jour des dépôts
 line_number=$(grep -n "archmirror.it" /etc/pacman.d/mirrorlist | cut -f1 -d:)
 sed -i "${line_number}s/^/#/" /etc/pacman.d/mirrorlist
 pacman -Syy
 
 # Installation des paquets nécessaires
-pacman -Syu --noconfirm make gcc wget curl git base-devel net-tools neofetch zsh unzip dhclient fontconfig networkmanager openssh
+pacman -Syu --noconfirm make gcc wget curl git base-devel net-tools neofetch zsh unzip dhclient fontconfig networkmanager openssh oh-my-posh
 
 url="https://www.softether-download.com/files/softether/"
 get_last_version() {
@@ -70,12 +79,13 @@ sleep 3
 
 systemctl enable sshd
 systemctl start sshd
+
 # Configuration de ZSH
 config_file=~/.zshrc
 
 # Copie du fichier de configuration actuel
-if [ ! -f "$config_file.bak" ]; then
-    cp "$config_file" "$config_file.bak"
+if [ ! -f "$config_file".bak ]; then
+    cp "$config_file" "$config_file".bak
 fi
 # création du fichier temporraire
 zshrc_tmp="$(mktemp)" 
@@ -94,9 +104,9 @@ start_vpn() {
     /opt/softether/vpnclient/vpncmd localhost /CLIENT /CMD AccountConnect MyConnection > /dev/null 2>&1
     nmcli device connect ens33 > /dev/null 2>&1
     dhclient \$dev
-    ip route add 10.1.10.0/24 via 192.168.33.1
+    ip route add 10.101.150.0/24 via 192.168.33.1
     ip route del default via 192.168.33.1
-    echo -e "\nVPN Masi opérationnel !"
+    echo -e "\nVPN Masi opérationnel !!"
 }
 
 alias vpn_start=start_vpn
@@ -120,8 +130,8 @@ echo -e "\n Installation de Oh My Posh \n"
 chsh -s $(which zsh)
 
 ## Install Oh my Posh
-sudo wget https://github.com/JanDeDobbeleer/oh-my-posh/releases/latest/download/posh-linux-amd64 -O /usr/local/bin/oh-my-posh
-sudo chmod +x /usr/local/bin/oh-my-posh
+#sudo wget https://github.com/JanDeDobbeleer/oh-my-posh/releases/latest/download/posh-linux-amd64 -O /usr/local/bin/oh-my-posh
+#sudo chmod +x /usr/local/bin/oh-my-posh
 
 ## Download the themes
 mkdir ~/.poshthemes
@@ -143,4 +153,10 @@ rm ~/.fonts/Meslo.zip
 wget -O ~/.neofetch/OP.jpeg "https://w.forfun.com/fetch/d7/d7a12cf1106ee202c717b2617d457b95.jpeg"
 
 # Configurer Neofetch pour utiliser l'image
-source $config_file
+source "$config_file"
+
+echo -e "\nInstallation terminée"
+echo -e "\nReboot dans 5 secondes afin de prendre en compte les changements"
+echo "On va découvrir le nouveau terminal !!"
+sleep 5
+shutdown -r now
