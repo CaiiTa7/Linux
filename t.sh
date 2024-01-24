@@ -6,7 +6,7 @@ sed -i "${line_number}s/^/#/" /etc/pacman.d/mirrorlist
 pacman -Syy
 
 # Installation des paquets nécessaires
-pacman -Syu --noconfirm make gcc wget curl git base-devel net-tools neofetch zsh unzip dhclient fontconfig networkmanager
+pacman -Syu --noconfirm make gcc wget curl git base-devel net-tools neofetch zsh unzip dhclient fontconfig networkmanager openssh
 
 url="https://www.softether-download.com/files/softether/"
 get_last_version() {
@@ -66,10 +66,21 @@ $VPNCMD_BIN localhost /CLIENT /CMD AccountStatusGet MyConnection
 $VPNCLIENT_BIN stop
 
 sleep 3
+
+systemctl enable sshd
+systemctl start sshd
 # Configuration de ZSH
 config_file=~/.zshrc
 
-cat << 'EOF' >> $config_file
+# Copie du fichier de configuration actuel
+cp $config_file $config_file.bak
+
+# création du fichier temporraire
+zshrc_tmp=$(mktemp) 
+
+cp $config_file $zshrc_tmp
+
+cat << 'EOF' >> $zshrc_tmp
 # Verification VPN
 
 eval "$(oh-my-posh --init --shell zsh --config ~/.poshthemes/dracula.omp.json)"
@@ -81,7 +92,7 @@ start_vpn() {
     /opt/softether/vpnclient/vpncmd localhost /CLIENT /CMD AccountConnect MyConnection > /dev/null 2>&1
     nmcli device connect ens33 > /dev/null 2>&1
     dhclient $dev
-    ip route add 10.101.150.0/24 via 192.168.33.1
+    ip route add 10.1.10.0/24 via 192.168.33.1
     ip route del default via 192.168.33.1
     echo -e "\nVPN Masi opérationnel !"
 }
@@ -91,6 +102,9 @@ alias vpn_stop="sudo /opt/softether/vpnclient/vpnclient stop"
 alias vpn_restart="sudo /opt/softether/vpnclient/vpnclient stop && start_vpn"
 alias vpn_status="sudo /opt/softether/vpnclient/vpncmd localhost /CLIENT /CMD AccountList"
 EOF
+
+# Copie du fichier temporaire dans le fichier de configuration
+cp $zshrc_tmp $config_file
 
 echo "Fini"
 echo "Les alias VPN ont été ajoutés à $config_file"
@@ -102,6 +116,7 @@ echo "  - vpn_status : pour afficher l'état du client VPN"
 
 echo -e "\n Installation de Oh My Posh \n"
 chsh -s $(which zsh)
+
 ## Install Oh my Posh
 sudo wget https://github.com/JanDeDobbeleer/oh-my-posh/releases/latest/download/posh-linux-amd64 -O /usr/local/bin/oh-my-posh
 sudo chmod +x /usr/local/bin/oh-my-posh
