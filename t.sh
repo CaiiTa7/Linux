@@ -80,7 +80,7 @@ zshrc_tmp=$(mktemp)
 
 cp $config_file $zshrc_tmp
 
-cat << 'EOF' >> $zshrc_tmp
+cat << EOF >> $zshrc_tmp
 # Verification VPN
 
 eval "$(oh-my-posh --init --shell zsh --config ~/.poshthemes/dracula.omp.json)"
