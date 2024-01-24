@@ -43,7 +43,7 @@ if [ "$last_version" != "Nope" ]; then
     make install
     
     echo "Cleaning..."
-    rm -rf "$package_name"
+    rm "$package_name"
     echo "Done"
 fi
 
